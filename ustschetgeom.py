@@ -81,7 +81,7 @@ if not st.session_state.test_finished:
             
             # Картинки теперь компактные (width=350)
             if os.path.exists(q["image"]):
-                st.image(q["image"], width=350)
+                st.image(q["image"], width=700)
             else:
                 st.error(f"⚠️ Картинка '{q['image']}' не найдена!")
 
