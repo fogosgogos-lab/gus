@@ -1,174 +1,108 @@
 import streamlit as st
 import time
 import os
+import streamlit.components.v1 as components
 
 # === НАСТРОЙКИ ТЕСТА ===
-TIME_LIMIT = 7 * 60  # Время в секундах (7 минут)
+TIME_LIMIT = 5 * 60  # Время в секундах (5 минут)
 
-# Заполните этот список данными из вашего файла
-# Формат: "image" - имя картинки, "answer" - правильный ответ, "explanation" - пояснение, "points" - баллы
-# Замените ваш текущий список questions на этот:
 questions = [
-    {
-        "image": "1.png",
-        "answer": "ромб",
-        "explanation": "Ответ: ромб[cite: 9]. 1. FEGH - параллелограмм[cite: 10]. 2. FC=GD, CH=DH, ∠C=∠D следовательно CFH=DHG, тогда FH=GH[cite: 11]. 3. Параллелограмм, у которого смежные стороны равны - ромб[cite: 11].",
-        "points": 1
-    },
-    {
-        "image": "2.png",
-        "answer": "8",
-        "explanation": "Ответ: 8[cite: 18]. 1. ∠BCD=30°, тогда ∠C=60°, следовательно трапеция равнобедренная[cite: 19]. 2. ∠B=120°, ∠ABC=∠ACB=30° следовательно треугольник АВС равнобедренный, тогда AC=AB=BD=x, CD=2x (∠BCD=30°)[cite: 20, 21]. 3. 20=5x, x=4, 2x=CD=8[cite: 22].",
-        "points": 1
-    },
-    {
-        "image": "3.png",
-        "answer": "120",
-        "explanation": "Ответ: 120[cite: 28]. Сумма углов, прилежащих к боковой стороне, равна 180°. 180-60=120[cite: 29].",
-        "points": 1
-    },
-    {
-        "image": "4.png",
-        "answer": "60",
-        "explanation": "Ответ: 60[cite: 33]. В равнобедренной трапеции углы при каждом основании равны[cite: 34].",
-        "points": 1
-    },
-    {
-        "image": "5.png",
-        "answer": "15",
-        "explanation": "Ответ: 15[cite: 40]. В равнобедренной трапеции диагонали равны[cite: 41].",
-        "points": 1
-    },
-    {
-        "image": "6.png",
-        "answer": "6",
-        "explanation": "Ответ: 6[cite: 52]. В равнобедренной трапеции СЕ = DF. Тогда CE=(24-12)/2[cite: 53].",
-        "points": 1
-    },
-    {
-        "image": "7.png",
-        "answer": "равнобедренная",
-        "explanation": "Ответ: Равнобедренная[cite: 57]. Боковые стороны равны - равнобедренная[cite: 58].",
-        "points": 1
-    },
-    {
-        "image": "8.png",
-        "answer": "10",
-        "explanation": "Ответ: 10[cite: 66]. Из формулы m=(a+b)/2, где m средняя линия, получаем AB=(20-15)*2[cite: 68].",
-        "points": 1
-    },
-    {
-        "image": "9.png",
-        "answer": "5",
-        "explanation": "Ответ: 5[cite: 80]. Длина отрезка, соединяющего середины диагоналей трапеции, равна полуразности оснований. (20-10)/2=5[cite: 81].",
-        "points": 1
-    },
-    {
-        "image": "10.png",
-        "answer": "108",
-        "explanation": "Ответ: 108[cite: 90]. S=(a+b)/2 * h[cite: 91].",
-        "points": 1
-    },
-    {
-        "image": "11.png",
-        "answer": "6",
-        "explanation": "Ответ: 6 [cite: 98]. h = c * sin(α)[cite: 100].",
-        "points": 1
-    },
-    {
-        "image": "12.png",
-        "answer": "40",
-        "explanation": "Ответ: 40[cite: 111]. S = m * h, m - средняя линия[cite: 112, 113].",
-        "points": 1
-    },
-    {
-        "image": "13.png",
-        "answer": "50",
-        "explanation": "Ответ: 50[cite: 121]. S = 1/2 * d1 * d2 * sin(φ)[cite: 123].",
-        "points": 1
-    },
-    {
-        "image": "14.png",
-        "answer": "прямоугольная",
-        "explanation": "Ответ: Прямоугольная[cite: 125].",
-        "points": 1
-    }
+    {"image": "1.png", "answer": "ромб", "explanation": "Ответ: ромб. 1. FEGH - параллелограмм. 2. FC=GD, CH=DH, ∠C=∠D следовательно CFH=DHG, тогда FH=GH. 3. Параллелограмм, у которого смежные стороны равны - ромб.", "points": 1},
+    {"image": "2.png", "answer": "8", "explanation": "Ответ: 8. 1. ∠BCD=30°, тогда ∠C=60°, следовательно трапеция равнобедренная. 2. ∠B=120°, ∠ABC=∠ACB=30° следовательно треугольник АВС равнобедренный, тогда AC=AB=BD=x, CD=2x (∠BCD=30°). 3. 20=5x, x=4, 2x=CD=8.", "points": 1},
+    {"image": "3.png", "answer": "120", "explanation": "Ответ: 120. Сумма углов, прилежащих к боковой стороне, равна 180°. 180-60=120.", "points": 1},
+    {"image": "4.png", "answer": "60", "explanation": "Ответ: 60. В равнобедренной трапеции углы при каждом основании равны.", "points": 1},
+    {"image": "5.png", "answer": "15", "explanation": "Ответ: 15. В равнобедренной трапеции диагонали равны.", "points": 1},
+    {"image": "6.png", "answer": "6", "explanation": "Ответ: 6. В равнобедренной трапеции СЕ = DF. Тогда CE=(24-12)/2.", "points": 1},
+    {"image": "7.png", "answer": "равнобедренная", "explanation": "Ответ: Равнобедренная. Боковые стороны равны - равнобедренная.", "points": 1},
+    {"image": "8.png", "answer": "10", "explanation": "Ответ: 10. Из формулы m=(a+b)/2, где m средняя линия, получаем AB=(20-15)*2.", "points": 1},
+    {"image": "9.png", "answer": "5", "explanation": "Ответ: 5. Длина отрезка, соединяющего середины диагоналей трапеции, равна полуразности оснований. (20-10)/2=5.", "points": 1},
+    {"image": "10.png", "answer": "108", "explanation": "Ответ: 108. S=(a+b)/2 * h.", "points": 1},
+    {"image": "11.png", "answer": "6", "explanation": "Ответ: 6. h = c * sin(α).", "points": 1},
+    {"image": "12.png", "answer": "40", "explanation": "Ответ: 40. S = m * h, m - средняя линия.", "points": 1},
+    {"image": "13.png", "answer": "50", "explanation": "Ответ: 50. S = 1/2 * d1 * d2 * sin(φ).", "points": 1},
+    {"image": "14.png", "answer": "прямоугольная", "explanation": "Ответ: Прямоугольная.", "points": 1}
 ]
 
 max_points = sum(q["points"] for q in questions)
 
-# === ИНИЦИАЛИЗАЦИЯ СОСТОЯНИЯ (SESSION STATE) ===
+# === ИНИЦИАЛИЗАЦИЯ СОСТОЯНИЯ ===
 if 'start_time' not in st.session_state:
     st.session_state.start_time = time.time()
-if 'answers' not in st.session_state:
-    st.session_state.answers = [""] * len(questions)
-if 'name' not in st.session_state:
-    st.session_state.name = ""
 if 'test_finished' not in st.session_state:
     st.session_state.test_finished = False
-
-
-def update_timer():
-    elapsed = int(time.time() - st.session_state.start_time)
-    remaining = max(0, TIME_LIMIT - elapsed)
-    minutes = remaining // 60
-    seconds = remaining % 60
-    return f"Осталось: {minutes:02d}:{seconds:02d}", remaining
-
+if 'saved_answers' not in st.session_state:
+    st.session_state.saved_answers = [""] * len(questions)
+if 'user_name' not in st.session_state:
+    st.session_state.user_name = ""
 
 # === ИНТЕРФЕЙС ===
 st.title("Устный счет: Трапеция")
 
 if not st.session_state.test_finished:
-    # --- Блок таймера ---
-    timer_text, remaining = update_timer()
+    # Расчет оставшегося времени в Python
+    elapsed = time.time() - st.session_state.start_time
+    remaining_seconds = int(TIME_LIMIT - elapsed)
 
-    # Чтобы таймер обновлялся, но не сбрасывал фокус с полей ввода каждые 1 сек,
-    # мы выведем его в верхнюю панель и добавим кнопку "Обновить время",
-    # либо время зафиксируется при отправке ответов.
-    st.info(f"⏱️ {timer_text}")
+    if remaining_seconds <= 0:
+        st.warning("Время вышло! Пожалуйста, нажмите кнопку 'Завершить тест' внизу страницы, чтобы увидеть результат.")
+        remaining_seconds = 0
 
-    if remaining <= 0:
-        st.warning("Время вышло! Тест завершен автоматически.")
-        st.session_state.test_finished = True
-        st.rerun()
+    # Плавный таймер на JavaScript (не перезагружает страницу)
+    components.html(
+        f"""
+        <div id="timer" style="font-size:20px; font-family:sans-serif; padding:15px; border-radius:8px; background-color:#f0f2f6; color:#ff4b4b; text-align:center; font-weight:bold; margin-bottom: 20px;">
+        </div>
+        <script>
+        var remaining = {remaining_seconds};
+        var timerElement = document.getElementById("timer");
+        
+        var x = setInterval(function() {{
+            if (remaining <= 0) {{
+                clearInterval(x);
+                timerElement.innerHTML = "⏳ Время вышло! Нажмите Завершить тест.";
+            }} else {{
+                var m = Math.floor(remaining / 60);
+                var s = remaining % 60;
+                timerElement.innerHTML = "⏱️ Осталось времени: " + m + "м " + s + "с";
+                remaining -= 1;
+            }}
+        }}, 1000);
+        </script>
+        """, 
+        height=80
+    )
 
-    # --- Ввод имени ---
-    st.session_state.name = st.text_input("Введите ваше имя:", value=st.session_state.name)
+    # Все задания обернуты в форму, чтобы не терять фокус при вводе
+    with st.form("quiz_form"):
+        user_name = st.text_input("Введите ваше имя:", value=st.session_state.user_name)
 
-    # --- Вывод заданий (картинки) ---
-    for i, q in enumerate(questions):
-        st.markdown("---")
-        st.subheader(f"Задание {i + 1}")
+        for i, q in enumerate(questions):
+            st.markdown(f"### Задание {i + 1}")
+            
+            # Картинки теперь компактные (width=350)
+            if os.path.exists(q["image"]):
+                st.image(q["image"], width=350)
+            else:
+                st.error(f"⚠️ Картинка '{q['image']}' не найдена!")
 
-        # Проверка существования картинки
-        if os.path.exists(q["image"]):
-            st.image(q["image"], use_container_width=True)
-        else:
-            st.error(f"⚠️ Картинка '{q['image']}' не найдена в репозитории!")
+            # Уникальный ключ для каждого ответа внутри формы
+            st.text_input("Ваш ответ:", key=f"ans_{i}")
+            st.markdown("---")
 
-        # Поле для ввода ответа
-        user_input = st.text_input(
-            "Ваш ответ:",
-            value=st.session_state.answers[i],
-            key=f"q_{i}"
-        )
-        st.session_state.answers[i] = user_input.strip()
+        submitted = st.form_submit_button("Завершить тест", type="primary")
 
-    st.markdown("---")
-
-    col1, col2 = st.columns([1, 4])
-    with col1:
-        if st.button("Завершить тест", type="primary"):
+        if submitted:
+            # При нажатии кнопки мы надежно копируем все ответы в сессию
+            st.session_state.user_name = user_name
+            for i in range(len(questions)):
+                st.session_state.saved_answers[i] = st.session_state[f"ans_{i}"]
+            
             st.session_state.test_finished = True
-            st.rerun()
-    with col2:
-        if st.button("🔄 Обновить таймер"):
             st.rerun()
 
 else:
-    # --- ЭКРАН РЕЗУЛЬТАТОВ ---
-    name = st.session_state.name.strip() or "Участник"
+    # === ЭКРАН РЕЗУЛЬТАТОВ ===
+    name = st.session_state.user_name.strip() or "Участник"
     correct_count = 0
     wrong_count = 0
     no_answer_count = 0
@@ -178,9 +112,10 @@ else:
     st.subheader("Результаты и разбор заданий")
 
     for i, q in enumerate(questions):
-        user_ans = st.session_state.answers[i].strip().lower()
+        # Берем сохраненные ответы
+        user_ans = st.session_state.saved_answers[i].strip().lower()
         correct_ans = str(q["answer"]).strip().lower()
-
+        
         is_correct = False
         if not user_ans:
             no_answer_count += 1
@@ -197,7 +132,7 @@ else:
         # Выпадающий блок для каждого вопроса
         with st.expander(f"{status_emoji} Задание {i + 1} | Ваш ответ: {user_ans or '(нет ответа)'}"):
             if os.path.exists(q["image"]):
-                st.image(q["image"], width=300)
+                st.image(q["image"], width=250) # На результатах картинки еще меньше
             st.write(f"**Правильный ответ:** {q['answer']}")
             if not is_correct:
                 st.info(f"**Пояснение:** {q['explanation']}")
@@ -212,7 +147,8 @@ else:
 * **Нет ответа:** {no_answer_count}
 * **Ваш балл:** {total_score} из {max_points}""")
 
-    if st.button("Начать заново"):
+    # Кнопка начать заново (очищает всю память)
+    if st.button("Начать заново", type="primary"):
         for key in list(st.session_state.keys()):
             del st.session_state[key]
         st.rerun()
